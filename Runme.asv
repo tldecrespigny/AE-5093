@@ -5,7 +5,8 @@ close all
 %Initial Conditions
 mp = 200;
 mpl = 300;
-m0 = mp + mpl;
+ms = 150;
+m0 = mp + ms + mpl;
 tspan=0:tStep:tend;
 tStep = .01;
 tend = 100000;
@@ -40,7 +41,7 @@ dm = f(2);
 y = 1.4;
 rhoh = rho(f(3)); 
 mp = mp + dm;
-m = mp+mpl;
+m = ms+mp+mpl;
 V = V + dv;
 
 V_dot = -g-(.5*rhoh*C_d*A*(V^2))/m + (T/m);
@@ -49,8 +50,8 @@ if t >= t_bo
 else
     m_dot = mdot;
 end
-x_dot = V;
-x_t = [V_dot,m_dot,x_dot];
+x_dot = 
+x_t = [V_dot,m_dot];
 end
 
 
