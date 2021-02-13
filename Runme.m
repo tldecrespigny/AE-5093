@@ -11,18 +11,15 @@ T11 = 216.66;   % K
 rho0 = 1.225;   % kg/m^3
 Hmax = 100000; %desired final height of 100km
 %deltaV = sqrt(2*g*Hmax);
-deltaV = 2500;
+deltaV = 1800;
 psl = 101320; %pa
 a = -.00065; %k/m
 tStep = 1;
 dt = tStep;
-tend = 220;
+tend = 290;
 tspan=0:tStep:tend;
-tbStep = 1;
-tbend = 25;
 gamma = 1.4;
 gammarocket = 1.3;
-alt = zeros(1,tbend/tbStep);
 V0 = 0;
 %% Bread
 Me = 2;
@@ -41,7 +38,6 @@ mp = MpoverM0*m0;
 Mstructural = m0-mp-Mpay;
 Mf = Mstructural+Mpay;
 At = Aexit/AoverAstar;
-
 m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
 burn_theortical=mp/m_dot
 Pexit = 101500; %101.5 kpa sea level
@@ -102,24 +98,81 @@ function T = temp(h)    % K
 global a1 Tsl
 T = Tsl-a1.*h;
 end
-function P = press(h)   % Pa
-global g R expo Tsl T11
-if h <= 11000
-    P = 101320.*(temp(h)./Tsl).^expo;
-else
-    P = 22346.*exp(-(g.*(h-11000))./(R.*T11));
-    
+function rho = dens(h)
+%H in Meters
+% assumes temperature lapse rate is zero
+R = 8.3144598;
+M = .0289644;
+g = 9.80665;
+    if(h<11000)
+        rho0 = 1.225;
+        T0 = 288.15;
+        h0=0;
+    elseif(h<20000)
+        rho0 = .36391;
+        T0 = 216.65;
+        h0=11000;
+    elseif(h<32000)
+        rho0 = .08803;
+        T0 = 216.65;
+        h0=20000;
+    elseif(h<47000)
+        rho0 = .01322;
+        T0 = 228.65;
+        h0=32000;
+    elseif(h<51000)
+        rho0 = .00143;
+        T0 = 270.65;
+        h0=47000;
+    elseif(h<71000)
+        rho0 = .00086;
+        T0 = 270.65;
+        h0=51000;
+    else
+        rho0 = .000064;
+        T0 = 214.65;
+        h0=71000; 
+    end
+rho = rho0*exp((-g*M*(h-h0))/(R*T0));
 end
-end
-function rho = dens(h)  % kg/m^3
-global g R a1
-Ts = 288.16;
-Rhos = 1.225;
-temp = Ts + a1*h;
-rho= Rhos*exp((-g*0.0289644*h)/(R*288.16));
-if h<=70000
-    rho=0;
-end
+
+
+function P = press(h)
+%H in Meters
+% assumes temperature lapse rate is zero
+R = 8.3144598;
+M = .0289644;
+g = 9.80665;
+    if(h<11000)
+        P0 = 101325;
+        T0 = 288.15;
+        h0=0;
+    elseif(h<20000)
+        P0 = 22632.10;
+        T0 = 216.65;
+        h0=11000;
+    elseif(h<32000)
+        P0 = 5474.89;
+        T0 = 216.65;
+        h0=20000;
+    elseif(h<47000)
+        P0 = 868.02;
+        T0 = 228.65;
+        h0=32000;
+    elseif(h<51000)
+        P0 = 110.91;
+        T0 = 270.65;
+        h0=47000;
+    elseif(h<71000)
+        P0 = 66.94;
+        T0 = 270.65;
+        h0=51000;
+    else
+        P0 = 3.96;
+        T0 = 214.65;
+        h0=71000; 
+    end
+P = P0*exp((-g*M*(h-h0))/(R*T0));
 end
 
 %part inout Me Ae To Hdesign (sea level)
