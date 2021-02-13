@@ -13,7 +13,7 @@ Hmax = 100000; %desired final height of 100km
 deltaV = 2400;
 psl = 101320; %pa
 a = -.00065; %k/m
-tStep = 0.5;
+tStep = 1;
 dt = tStep;
 tend = 100;
 tspan=0:tStep:tend;
@@ -44,7 +44,7 @@ At = Aexit/AoverAstar;
 m_dot = (Me*sqrt(gamma*R*Te))*gamma*Aexit;
 Pexit = 101500; %101.5 kpa sea level
 m0 = Mstructural+Mpay;
-initial_conditions = [V0,0,m_dot];
+initial_conditions = [V0,0, -m_dot];
 Vflow = Me*sqrt(1.4*R*Te);
 %% Butter
 integrand = initial_conditions;
@@ -64,10 +64,10 @@ V = x_t(1);
 rho = dens(x_t(2));
 dm = x_t(3);
 C_d = .3;
-mp = mp - dm;
+mp = mp +dm;
 m = mp+m0;
 T = m_dot*Vflow + (Pexit-press(x_t(2)))*Aexit;
-V_dot = -g-(.5*rho*C_d*Aexit*(V^2))/m + (T/m);
+V_dot = -g-(.5*rho*C_d*(Aexit*1.2)*(V^2))/m + (T/m);
 if mp <= 0
     dm = 0;
     m_dot = 0;
@@ -75,7 +75,7 @@ if mp <= 0
     Pexit = 0;
 end
 x_dot = V;
-x_t = [V_dot, x_dot, m_dot];
+x_t = [V_dot, x_dot, -m_dot];
 end
 
 function x_tplus_dt = rk4_step(x_t)

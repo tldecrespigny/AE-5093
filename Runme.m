@@ -15,7 +15,7 @@ psl = 101320; %pa
 a = -.00065; %k/m
 tStep = 0.5;
 dt = tStep;
-tend = 100;
+tend = 15;
 tspan=0:tStep:tend;
 tbStep = 1;
 tbend = 25;
@@ -23,8 +23,8 @@ gamma = 1.4;
 alt = zeros(1,tbend/tbStep);
 V0 = 0;
 %% Bread
-Me = 2.25;
-Aexit = (0.7^2)* pi; %meters
+Me = 4;
+Aexit = (.75^2)* pi; %meters
 T0 = 3800; %kelvin
 gamma = 1.4;
 Pexit = 101500; %101.5 kpa
@@ -41,11 +41,12 @@ mp = MpoverM0*m0;
 Mstructural = m0-mp-Mpay;
 Mf = Mstructural+Mpay;
 At = Aexit/AoverAstar;
-m_dot = (Me*sqrt(gamma*R*Te))*gamma*Aexit;
+Vflow = Me*sqrt(1.4*R*Te);
+m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
 Pexit = 101500; %101.5 kpa sea level
 m0 = Mstructural+Mpay;
-initial_conditions = [V0,0,m_dot];
-Vflow = Me*sqrt(1.4*R*Te);
+initial_conditions = [V0;0;-m_dot];
+
 %% Butter
 integrand = initial_conditions;
 for m1 = 1:numel(tspan)
@@ -53,7 +54,7 @@ for m1 = 1:numel(tspan)
     prediction(:,m1) = integrand;
 end
 %[t1,r1] = ode45(@f_x,tspan,initial_conditions); %try uing RK4
-plot(prediction)
+plot(tspan,prediction)
 legend(["V_dot" "x_dot" "mdot"])
 
 %% ODE
@@ -63,19 +64,23 @@ global g Vflow Aexit Pexit m0 m_dot mp;
 V = x_t(1);
 rho = dens(x_t(2));
 dm = x_t(3);
+x_dot = V;
 C_d = .3;
-mp = mp - dm;
+mp = mp + dm;
 m = mp+m0;
-T = m_dot*Vflow + (Pexit-press(x_t(2)))*Aexit;
-V_dot = -g-(.5*rho*C_d*Aexit*(V^2))/m + (T/m);
+w = m*9.81;
 if mp <= 0
     dm = 0;
     m_dot = 0;
     mp = 0;
     Pexit = 0;
+    b0=0;
+else
+    b0=1;
 end
-x_dot = V;
-x_t = [V_dot, x_dot, m_dot];
+T = m_dot*Vflow + ((Pexit-press(x_t(2)))*Aexit*b0);
+V_dot = -g-(.5*rho*C_d*Aexit*(V^2))/m + (T/m);
+x_t = [V_dot;x_dot;-m_dot];
 end
 
 function x_tplus_dt = rk4_step(x_t)

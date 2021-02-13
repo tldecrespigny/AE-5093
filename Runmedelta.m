@@ -56,7 +56,7 @@ V = f(1);
 rho = dens(f(2));
 dm = f(3);
 C_d = .3;
-
+x_dot = f(1);
 m0=m0+dm;
 m = m0;
 T = m_dot*Vflow + (Pexit-press(f(2)))*Aexit;
@@ -67,8 +67,7 @@ if m0 <= m0-mp
     mp = 0;
     Pexit = 0;
 end
-x_dot = V;
-x_t = [V_dot; x_dot; m_dot];
+x_t = [V_dot; x_dot; -m_dot];
 end
 
 
