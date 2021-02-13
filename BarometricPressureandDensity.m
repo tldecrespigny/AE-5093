@@ -1,3 +1,24 @@
+clc
+clear all 
+close all
+
+alt = [0:1:100000];
+p = zeros(1,numel(alt));
+r = zeros(1,numel(alt));
+
+for i= 1:numel(alt)
+p(i)= press(alt(i));
+r(i) = dens(alt(i));
+end
+figure 
+plot(alt,p)
+xlabel('Altitude (m)')
+ylabel('Pressure (Pa)')
+figure 
+plot(alt,r)
+xlabel('Altitude (m)')
+ylabel('Density (kg/m^3)')
+
 function rho = dens(h)
 %H in Meters
 % assumes temperature lapse rate is zero
