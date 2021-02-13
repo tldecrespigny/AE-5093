@@ -3,6 +3,7 @@ global  g R a1 expo Tsl T11 rho0 Vflow Pexit Aexit Me Te m0 mp m_dot dt;
 %% Initial Conditions
 g = 9.80665;    % m/s^2
 R = 287;        % J/(kgK)
+Rrocket = 8.314/(24/1000);
 a1 = -0.0065;    % K/m
 expo = -g/(a1*R);  % n/a
 Tsl = 288.16;   % K
@@ -10,23 +11,23 @@ T11 = 216.66;   % K
 rho0 = 1.225;   % kg/m^3
 Hmax = 100000; %desired final height of 100km
 %deltaV = sqrt(2*g*Hmax);
-deltaV = 2400;
+deltaV = 2500;
 psl = 101320; %pa
 a = -.00065; %k/m
-tStep = 0.5;
+tStep = 1;
 dt = tStep;
-tend = 15;
+tend = 220;
 tspan=0:tStep:tend;
 tbStep = 1;
 tbend = 25;
 gamma = 1.4;
+gammarocket = 1.3;
 alt = zeros(1,tbend/tbStep);
 V0 = 0;
 %% Bread
-Me = 4;
-Aexit = (.75^2)* pi; %meters
+Me = 2;
+Aexit = (0.7^2)* pi; %meters
 T0 = 3800; %kelvin
-gamma = 1.4;
 Pexit = 101500; %101.5 kpa
 Mpay = 300;
 
@@ -34,18 +35,19 @@ Mpay = 300;
 combustion_stag_pressure = Pexit/PoverP0;
 Te = ToverT0*T0;
 m0=Mpay/0.02; %from a payload mass fraction of 5%
-Ve = Me*sqrt(gamma*R*Te);
-Vexit = Me*sqrt(gamma*R*Te);
-MpoverM0 = 1-exp(-deltaV/Vexit);
+Vflow = Me*sqrt(gammarocket*Rrocket*Te);
+MpoverM0 = 1-exp(-deltaV/Vflow);
 mp = MpoverM0*m0;
 Mstructural = m0-mp-Mpay;
 Mf = Mstructural+Mpay;
 At = Aexit/AoverAstar;
-Vflow = Me*sqrt(1.4*R*Te);
+
 m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
+burn_theortical=mp/m_dot
 Pexit = 101500; %101.5 kpa sea level
 m0 = Mstructural+Mpay;
-initial_conditions = [V0;0;-m_dot];
+minitial = m0+mp;
+initial_conditions = [V0;0;minitial];
 
 %% Butter
 integrand = initial_conditions;
@@ -53,9 +55,10 @@ for m1 = 1:numel(tspan)
     integrand = rk4_step(integrand);
     prediction(:,m1) = integrand;
 end
-%[t1,r1] = ode45(@f_x,tspan,initial_conditions); %try uing RK4
 plot(tspan,prediction)
-legend(["V_dot" "x_dot" "mdot"])
+apogee = max(prediction(2,:))
+error = (Hmax/apogee)
+legend(["V_dot" "x_dot" "m"])
 
 %% ODE
 
@@ -63,13 +66,12 @@ function x_t = f_x(x_t)
 global g Vflow Aexit Pexit m0 m_dot mp;
 V = x_t(1);
 rho = dens(x_t(2));
-dm = x_t(3);
+m = x_t(3);
 x_dot = V;
 C_d = .3;
-mp = mp + dm;
-m = mp+m0;
+
 w = m*9.81;
-if mp <= 0
+if m <= m0
     dm = 0;
     m_dot = 0;
     mp = 0;
@@ -79,7 +81,7 @@ else
     b0=1;
 end
 T = m_dot*Vflow + ((Pexit-press(x_t(2)))*Aexit*b0);
-V_dot = -g-(.5*rho*C_d*Aexit*(V^2))/m + (T/m);
+V_dot = -g-(.5*rho*C_d*(Aexit*1.2)*(V^2))/m + (T/m);
 x_t = [V_dot;x_dot;-m_dot];
 end
 
@@ -106,6 +108,7 @@ if h <= 11000
     P = 101320.*(temp(h)./Tsl).^expo;
 else
     P = 22346.*exp(-(g.*(h-11000))./(R.*T11));
+    
 end
 end
 function rho = dens(h)  % kg/m^3
@@ -113,9 +116,11 @@ global g R a1
 Ts = 288.16;
 Rhos = 1.225;
 temp = Ts + a1*h;
-rho = Rhos*((temp/Ts)^(-1-(g/(a1*R))));
+rho= Rhos*exp((-g*0.0289644*h)/(R*288.16));
+if h<=70000
+    rho=0;
 end
-
+end
 
 %part inout Me Ae To Hdesign (sea level)
 
