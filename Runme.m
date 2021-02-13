@@ -16,13 +16,10 @@ psl = 101320; %pa
 a = -.00065; %k/m
 tStep = 1;
 dt = tStep;
-tend = 220;
+tend = 290;
 tspan=0:tStep:tend;
-tbStep = 1;
-tbend = 25;
 gamma = 1.4;
 gammarocket = 1.3;
-alt = zeros(1,tbend/tbStep);
 V0 = 0;
 %% Bread
 Me = 2;
