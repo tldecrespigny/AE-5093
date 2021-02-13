@@ -1,5 +1,5 @@
 clc; clear all; close all;
-global  g R a1 expo Tsl T11 rho0 Vflow Pexit Aexit Me Te m0 mp m_dot dt;
+global  g R a1 expo Tsl T11 rho0 Vflow Pexit Aexit Me Te m0 mp m_dot alt;
 %% Initial Conditions
 g = 9.80665;    % m/s^2
 R = 287;        % J/(kgK)
@@ -9,12 +9,10 @@ Tsl = 288.16;   % K
 T11 = 216.66;   % K
 rho0 = 1.225;   % kg/m^3
 Hmax = 100000; %desired final height of 100km
-%deltaV = sqrt(2*g*Hmax);
-deltaV = 2400;
-psl = 101320; %pa
+deltaV = 2400; %from internet
+psl = 101500; %pa
 a = -.00065; %k/m
-tStep = 0.5;
-dt = tStep;
+tStep = 1;
 tend = 100;
 tspan=0:tStep:tend;
 tbStep = 1;
@@ -26,7 +24,6 @@ V0 = 0;
 Me = 2.25;
 Aexit = (0.7^2)* pi; %meters
 T0 = 3800; %kelvin
-gamma = 1.4;
 Pexit = 101500; %101.5 kpa
 Mpay = 300;
 
@@ -34,60 +31,45 @@ Mpay = 300;
 combustion_stag_pressure = Pexit/PoverP0;
 Te = ToverT0*T0;
 m0=Mpay/0.02; %from a payload mass fraction of 5%
-Ve = Me*sqrt(gamma*R*Te);
-Vexit = Me*sqrt(gamma*R*Te);
-MpoverM0 = 1-exp(-deltaV/Vexit);
+Vflow = Me*sqrt(gamma*R*Te);
+MpoverM0 = 1-exp(-deltaV/Vflow);
 mp = MpoverM0*m0;
 Mstructural = m0-mp-Mpay;
 Mf = Mstructural+Mpay;
 At = Aexit/AoverAstar;
-m_dot = (Me*sqrt(gamma*R*Te))*gamma*Aexit;
+Vflow = Me*sqrt(gamma*R*Te);
+m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
 Pexit = 101500; %101.5 kpa sea level
-m0 = Mstructural+Mpay;
-initial_conditions = [V0,0,m_dot];
-Vflow = Me*sqrt(1.4*R*Te);
-%% Butter
-integrand = initial_conditions;
-for m1 = 1:numel(tspan)
-    integrand = rk4_step(integrand);
-    prediction(:,m1) = integrand;
-end
-%[t1,r1] = ode45(@f_x,tspan,initial_conditions); %try uing RK4
-plot(prediction)
+m0 = Mstructural+Mpay+mp;
+initial_conditions = [V0,0,-m_dot];
+
+%Butter
+hold on
+[t1,r1] = ode45(@f_x,tspan,initial_conditions); 
+plot(t1,r1)
 legend(["V_dot" "x_dot" "mdot"])
 
-%% ODE
-
-function x_t = f_x(x_t)
+%ODE
+function x_t = f_x(t,f)
 global g Vflow Aexit Pexit m0 m_dot mp;
-V = x_t(1);
-rho = dens(x_t(2));
-dm = x_t(3);
+V = f(1);
+rho = dens(f(2));
+dm = f(3);
 C_d = .3;
-mp = mp - dm;
-m = mp+m0;
-T = m_dot*Vflow + (Pexit-press(x_t(2)))*Aexit;
-V_dot = -g-(.5*rho*C_d*Aexit*(V^2))/m + (T/m);
-if mp <= 0
+
+m0=m0+dm;
+m = m0;
+T = m_dot*Vflow + (Pexit-press(f(2)))*Aexit;
+V_dot = -g-(.5*rho*C_d*(Aexit*1.2)*(V^2))/m + (T/m);
+if m0 <= m0-mp
     dm = 0;
     m_dot = 0;
     mp = 0;
     Pexit = 0;
 end
 x_dot = V;
-x_t = [V_dot, x_dot, m_dot];
+x_t = [V_dot; x_dot; m_dot];
 end
-
-function x_tplus_dt = rk4_step(x_t)
-global dt
-k1 = dt* f_x(x_t);
-k2 = dt* f_x(x_t + (1/2)*k1);
-k3 = dt* f_x(x_t + (1/2)*k2);
-k4 = dt* f_x(x_t + k3);
-
-x_tplus_dt = x_t + (1/6)*k1 + (1/3)*k2 + (1/3)*k3 + (1/6)*k4;
-end
-
 
 
 %% Atmospheric Parameters
