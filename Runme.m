@@ -11,27 +11,30 @@ T11 = 216.66;   % K
 rho0 = 1.225;   % kg/m^3
 Hmax = 100000; %desired final height of 100km
 %deltaV = sqrt(2*g*Hmax);
-deltaV = 1800;
+deltaV = 1700; %m/s
 psl = 101320; %pa
 a = -.00065; %k/m
 tStep = 1;
 dt = tStep;
-tend = 290;
+tend = 290; %290
 tspan=0:tStep:tend;
 gamma = 1.4;
-gammarocket = 1.3;
+gammarocket = 1.3; %specific heat ratio 1.3
 V0 = 0;
 %% Bread
 Me = 2;
-Aexit = (0.7^2)* pi; %meters
+Aexit = 1.25; %meters sqaured
 T0 = 3800; %kelvin
-Pexit = 101500; %101.5 kpa
+Hdesign = 0;
+Pexit = press(Hdesign); %101.5 kpa
 Mpay = 300;
 
-[mach, ToverT0, PoverP0, RhooverRho0, AoverAstar] = flowisentropic(gamma, Me);
+[mach, ToverT0, PoverP0, RhooverRho0, AoverAstar] = flowisentropic(gammarocket, Me);
 combustion_stag_pressure = Pexit/PoverP0;
+chamber_pressure = (PoverP0*combustion_stag_pressure)/101325
+Pt= 0.5457*combustion_stag_pressure; %p/p0 for M=1
 Te = ToverT0*T0;
-m0=Mpay/0.02; %from a payload mass fraction of 5%
+m0=Mpay/0.02; %from a payload mass fraction of 2%
 Vflow = Me*sqrt(gammarocket*Rrocket*Te);
 MpoverM0 = 1-exp(-deltaV/Vflow);
 mp = MpoverM0*m0;
@@ -39,12 +42,11 @@ Mstructural = m0-mp-Mpay;
 Mf = Mstructural+Mpay;
 At = Aexit/AoverAstar;
 m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
-burn_theortical=mp/m_dot
-Pexit = 101500; %101.5 kpa sea level
 m0 = Mstructural+Mpay;
 minitial = m0+mp;
 initial_conditions = [V0;0;minitial];
-
+pburn = press(6515.65); %atm pressure at cut out
+pap = press(100160); %atm pressure at apogee
 %% Butter
 integrand = initial_conditions;
 for m1 = 1:numel(tspan)
@@ -53,7 +55,7 @@ for m1 = 1:numel(tspan)
 end
 plot(tspan,prediction)
 apogee = max(prediction(2,:))
-error = (Hmax/apogee)
+error = (Hmax/apogee);
 legend(["V_dot" "x_dot" "m"])
 
 %% ODE
@@ -174,7 +176,3 @@ g = 9.80665;
     end
 P = P0*exp((-g*M*(h-h0))/(R*T0));
 end
-
-%part inout Me Ae To Hdesign (sea level)
-
-%take in part 4 functions and calc part 5

@@ -1,0 +1,430 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Runme</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-02-13"><meta name="DC.source" content="Runme.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Initial Conditions</a></li><li><a href="#3">Bread</a></li><li><a href="#4">Butter</a></li><li><a href="#5">ODE</a></li><li><a href="#6">Atmospheric Parameters</a></li></ul></div><pre class="codeinput">clc; clear <span class="string">all</span>; close <span class="string">all</span>;
+<span class="keyword">global</span>  g R a1 expo Tsl T11 rho0 Vflow Pexit Aexit Me Te m0 mp m_dot dt;
+</pre><h2 id="2">Initial Conditions</h2><pre class="codeinput">g = 9.80665;    <span class="comment">% m/s^2</span>
+R = 287;        <span class="comment">% J/(kgK)</span>
+Rrocket = 8.314/(24/1000);
+a1 = -0.0065;    <span class="comment">% K/m</span>
+expo = -g/(a1*R);  <span class="comment">% n/a</span>
+Tsl = 288.16;   <span class="comment">% K</span>
+T11 = 216.66;   <span class="comment">% K</span>
+rho0 = 1.225;   <span class="comment">% kg/m^3</span>
+Hmax = 100000; <span class="comment">%desired final height of 100km</span>
+<span class="comment">%deltaV = sqrt(2*g*Hmax);</span>
+deltaV = 1700; <span class="comment">%m/s</span>
+psl = 101320; <span class="comment">%pa</span>
+a = -.00065; <span class="comment">%k/m</span>
+tStep = 1;
+dt = tStep;
+tend = 290; <span class="comment">%290</span>
+tspan=0:tStep:tend;
+gamma = 1.4;
+gammarocket = 1.3; <span class="comment">%specific heat ratio 1.3</span>
+V0 = 0;
+</pre><h2 id="3">Bread</h2><pre class="codeinput">Me = 2;
+Aexit = 1.25; <span class="comment">%meters sqaured</span>
+T0 = 3800; <span class="comment">%kelvin</span>
+Hdesign = 0;
+Pexit = press(Hdesign); <span class="comment">%101.5 kpa</span>
+Mpay = 300;
+
+[mach, ToverT0, PoverP0, RhooverRho0, AoverAstar] = flowisentropic(gammarocket, Me);
+combustion_stag_pressure = Pexit/PoverP0;
+chamber_pressure = (PoverP0*combustion_stag_pressure)/101325
+Pt= 0.5457*combustion_stag_pressure; <span class="comment">%p/p0 for M=1</span>
+Te = ToverT0*T0;
+m0=Mpay/0.02; <span class="comment">%from a payload mass fraction of 2%</span>
+Vflow = Me*sqrt(gammarocket*Rrocket*Te);
+MpoverM0 = 1-exp(-deltaV/Vflow);
+mp = MpoverM0*m0;
+Mstructural = m0-mp-Mpay;
+Mf = Mstructural+Mpay;
+At = Aexit/AoverAstar;
+m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
+m0 = Mstructural+Mpay;
+minitial = m0+mp;
+initial_conditions = [V0;0;minitial];
+pburn = press(6515.65); <span class="comment">%atm pressure at cut out</span>
+pap = press(100160); <span class="comment">%atm pressure at apogee</span>
+</pre><pre class="codeoutput">
+chamber_pressure =
+
+     1
+
+</pre><h2 id="4">Butter</h2><pre class="codeinput">integrand = initial_conditions;
+<span class="keyword">for</span> m1 = 1:numel(tspan)
+    integrand = rk4_step(integrand);
+    prediction(:,m1) = integrand;
+<span class="keyword">end</span>
+plot(tspan,prediction)
+apogee = max(prediction(2,:))
+error = (Hmax/apogee);
+legend([<span class="string">"V_dot"</span> <span class="string">"x_dot"</span> <span class="string">"m"</span>])
+</pre><h2 id="5">ODE</h2><pre class="codeinput"><span class="keyword">function</span> x_t = f_x(x_t)
+<span class="keyword">global</span> g Vflow Aexit Pexit m0 m_dot mp;
+V = x_t(1);
+rho = dens(x_t(2));
+m = x_t(3);
+x_dot = V;
+C_d = .3;
+
+w = m*9.81;
+<span class="keyword">if</span> m &lt;= m0
+    dm = 0;
+    m_dot = 0;
+    mp = 0;
+    Pexit = 0;
+    b0=0;
+<span class="keyword">else</span>
+    b0=1;
+<span class="keyword">end</span>
+T = m_dot*Vflow + ((Pexit-press(x_t(2)))*Aexit*b0);
+V_dot = -g-(.5*rho*C_d*(Aexit*1.2)*(V^2))/m + (T/m);
+x_t = [V_dot;x_dot;-m_dot];
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> x_tplus_dt = rk4_step(x_t)
+<span class="keyword">global</span> dt
+k1 = dt* f_x(x_t);
+k2 = dt* f_x(x_t + (1/2)*k1);
+k3 = dt* f_x(x_t + (1/2)*k2);
+k4 = dt* f_x(x_t + k3);
+
+x_tplus_dt = x_t + (1/6)*k1 + (1/3)*k2 + (1/3)*k3 + (1/6)*k4;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">
+apogee =
+
+   1.0140e+05
+
+</pre><img vspace="5" hspace="5" src="Runme_01.png" alt=""> <h2 id="6">Atmospheric Parameters</h2><pre class="codeinput"><span class="keyword">function</span> T = temp(h)    <span class="comment">% K</span>
+<span class="keyword">global</span> a1 Tsl
+T = Tsl-a1.*h;
+<span class="keyword">end</span>
+<span class="keyword">function</span> rho = dens(h)
+<span class="comment">%H in Meters</span>
+<span class="comment">% assumes temperature lapse rate is zero</span>
+R = 8.3144598;
+M = .0289644;
+g = 9.80665;
+    <span class="keyword">if</span>(h&lt;11000)
+        rho0 = 1.225;
+        T0 = 288.15;
+        h0=0;
+    <span class="keyword">elseif</span>(h&lt;20000)
+        rho0 = .36391;
+        T0 = 216.65;
+        h0=11000;
+    <span class="keyword">elseif</span>(h&lt;32000)
+        rho0 = .08803;
+        T0 = 216.65;
+        h0=20000;
+    <span class="keyword">elseif</span>(h&lt;47000)
+        rho0 = .01322;
+        T0 = 228.65;
+        h0=32000;
+    <span class="keyword">elseif</span>(h&lt;51000)
+        rho0 = .00143;
+        T0 = 270.65;
+        h0=47000;
+    <span class="keyword">elseif</span>(h&lt;71000)
+        rho0 = .00086;
+        T0 = 270.65;
+        h0=51000;
+    <span class="keyword">else</span>
+        rho0 = .000064;
+        T0 = 214.65;
+        h0=71000;
+    <span class="keyword">end</span>
+rho = rho0*exp((-g*M*(h-h0))/(R*T0));
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> P = press(h)
+<span class="comment">%H in Meters</span>
+<span class="comment">% assumes temperature lapse rate is zero</span>
+R = 8.3144598;
+M = .0289644;
+g = 9.80665;
+    <span class="keyword">if</span>(h&lt;11000)
+        P0 = 101325;
+        T0 = 288.15;
+        h0=0;
+    <span class="keyword">elseif</span>(h&lt;20000)
+        P0 = 22632.10;
+        T0 = 216.65;
+        h0=11000;
+    <span class="keyword">elseif</span>(h&lt;32000)
+        P0 = 5474.89;
+        T0 = 216.65;
+        h0=20000;
+    <span class="keyword">elseif</span>(h&lt;47000)
+        P0 = 868.02;
+        T0 = 228.65;
+        h0=32000;
+    <span class="keyword">elseif</span>(h&lt;51000)
+        P0 = 110.91;
+        T0 = 270.65;
+        h0=47000;
+    <span class="keyword">elseif</span>(h&lt;71000)
+        P0 = 66.94;
+        T0 = 270.65;
+        h0=51000;
+    <span class="keyword">else</span>
+        P0 = 3.96;
+        T0 = 214.65;
+        h0=71000;
+    <span class="keyword">end</span>
+P = P0*exp((-g*M*(h-h0))/(R*T0));
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc; clear all; close all;
+global  g R a1 expo Tsl T11 rho0 Vflow Pexit Aexit Me Te m0 mp m_dot dt;
+%% Initial Conditions
+g = 9.80665;    % m/s^2
+R = 287;        % J/(kgK)
+Rrocket = 8.314/(24/1000);
+a1 = -0.0065;    % K/m
+expo = -g/(a1*R);  % n/a
+Tsl = 288.16;   % K
+T11 = 216.66;   % K
+rho0 = 1.225;   % kg/m^3
+Hmax = 100000; %desired final height of 100km
+%deltaV = sqrt(2*g*Hmax);
+deltaV = 1700; %m/s
+psl = 101320; %pa
+a = -.00065; %k/m
+tStep = 1;
+dt = tStep;
+tend = 290; %290
+tspan=0:tStep:tend;
+gamma = 1.4;
+gammarocket = 1.3; %specific heat ratio 1.3
+V0 = 0;
+%% Bread
+Me = 2;
+Aexit = 1.25; %meters sqaured
+T0 = 3800; %kelvin
+Hdesign = 0;
+Pexit = press(Hdesign); %101.5 kpa
+Mpay = 300;
+
+[mach, ToverT0, PoverP0, RhooverRho0, AoverAstar] = flowisentropic(gammarocket, Me);
+combustion_stag_pressure = Pexit/PoverP0;
+chamber_pressure = (PoverP0*combustion_stag_pressure)/101325
+Pt= 0.5457*combustion_stag_pressure; %p/p0 for M=1
+Te = ToverT0*T0;
+m0=Mpay/0.02; %from a payload mass fraction of 2%
+Vflow = Me*sqrt(gammarocket*Rrocket*Te);
+MpoverM0 = 1-exp(-deltaV/Vflow);
+mp = MpoverM0*m0;
+Mstructural = m0-mp-Mpay;
+Mf = Mstructural+Mpay;
+At = Aexit/AoverAstar;
+m_dot = Vflow*(RhooverRho0*rho0)*Aexit;
+m0 = Mstructural+Mpay;
+minitial = m0+mp;
+initial_conditions = [V0;0;minitial];
+pburn = press(6515.65); %atm pressure at cut out
+pap = press(100160); %atm pressure at apogee
+%% Butter
+integrand = initial_conditions;
+for m1 = 1:numel(tspan)
+    integrand = rk4_step(integrand);
+    prediction(:,m1) = integrand;
+end
+plot(tspan,prediction)
+apogee = max(prediction(2,:))
+error = (Hmax/apogee);
+legend(["V_dot" "x_dot" "m"])
+
+%% ODE
+
+function x_t = f_x(x_t)
+global g Vflow Aexit Pexit m0 m_dot mp;
+V = x_t(1);
+rho = dens(x_t(2));
+m = x_t(3);
+x_dot = V;
+C_d = .3;
+
+w = m*9.81;
+if m <= m0
+    dm = 0;
+    m_dot = 0;
+    mp = 0;
+    Pexit = 0;
+    b0=0;
+else
+    b0=1;
+end
+T = m_dot*Vflow + ((Pexit-press(x_t(2)))*Aexit*b0);
+V_dot = -g-(.5*rho*C_d*(Aexit*1.2)*(V^2))/m + (T/m);
+x_t = [V_dot;x_dot;-m_dot];
+end
+
+function x_tplus_dt = rk4_step(x_t)
+global dt
+k1 = dt* f_x(x_t);
+k2 = dt* f_x(x_t + (1/2)*k1);
+k3 = dt* f_x(x_t + (1/2)*k2);
+k4 = dt* f_x(x_t + k3);
+
+x_tplus_dt = x_t + (1/6)*k1 + (1/3)*k2 + (1/3)*k3 + (1/6)*k4;
+end
+
+
+
+%% Atmospheric Parameters
+function T = temp(h)    % K
+global a1 Tsl
+T = Tsl-a1.*h;
+end
+function rho = dens(h)
+%H in Meters
+% assumes temperature lapse rate is zero
+R = 8.3144598;
+M = .0289644;
+g = 9.80665;
+    if(h<11000)
+        rho0 = 1.225;
+        T0 = 288.15;
+        h0=0;
+    elseif(h<20000)
+        rho0 = .36391;
+        T0 = 216.65;
+        h0=11000;
+    elseif(h<32000)
+        rho0 = .08803;
+        T0 = 216.65;
+        h0=20000;
+    elseif(h<47000)
+        rho0 = .01322;
+        T0 = 228.65;
+        h0=32000;
+    elseif(h<51000)
+        rho0 = .00143;
+        T0 = 270.65;
+        h0=47000;
+    elseif(h<71000)
+        rho0 = .00086;
+        T0 = 270.65;
+        h0=51000;
+    else
+        rho0 = .000064;
+        T0 = 214.65;
+        h0=71000; 
+    end
+rho = rho0*exp((-g*M*(h-h0))/(R*T0));
+end
+
+
+function P = press(h)
+%H in Meters
+% assumes temperature lapse rate is zero
+R = 8.3144598;
+M = .0289644;
+g = 9.80665;
+    if(h<11000)
+        P0 = 101325;
+        T0 = 288.15;
+        h0=0;
+    elseif(h<20000)
+        P0 = 22632.10;
+        T0 = 216.65;
+        h0=11000;
+    elseif(h<32000)
+        P0 = 5474.89;
+        T0 = 216.65;
+        h0=20000;
+    elseif(h<47000)
+        P0 = 868.02;
+        T0 = 228.65;
+        h0=32000;
+    elseif(h<51000)
+        P0 = 110.91;
+        T0 = 270.65;
+        h0=47000;
+    elseif(h<71000)
+        P0 = 66.94;
+        T0 = 270.65;
+        h0=51000;
+    else
+        P0 = 3.96;
+        T0 = 214.65;
+        h0=71000; 
+    end
+P = P0*exp((-g*M*(h-h0))/(R*T0));
+end
+
+##### SOURCE END #####
+--></body></html>
