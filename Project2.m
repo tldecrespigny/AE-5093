@@ -21,9 +21,12 @@ C = (1+((y+1)/2)*M^2)*tan(theta);
 x = zeros(1,20);
 x(1) = sqrt(M^2-1);
 n=2;
-    while x(n-1)~= x(n)
+accuracy = 1;
+
+    while accuracy > 0.000001
         x(n)= sqrt(A-(B/(x(n-1)+C)));
+        accuracy = abs(x(n-1)- x(n));
         n=n+1;
     end
-Beta = acot(x);
+Beta = acot(x(n-1));
 end
