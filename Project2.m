@@ -1,21 +1,21 @@
 clc; clear all; close all;
-global y
-M1 = 2;
+global y theta_3 theta_2 P2_P1 P3_P1 a_2 a_3 b_2 b_3 c
+M1 = 2.5;
 alt = 5000; %meters
 p_s = 54000; %54kpa
 t_s = 225; %k
 y = 1.3;
 
-theta_2 = 9*(pi/180); %input degrees
-theta_3 = -3*(pi/180); %inputdegrees
+theta_2 = 12*(pi/180); %input degrees
+theta_3 = -8*(pi/180); %inputdegrees
 
-beta2 = collar(M1,theta_2)*(180/pi)
-beta3 = collar(M1,theta_3)*(180/pi)
+beta2 = collar(M1,theta_2);
+beta3 = collar(M1,theta_3);
 
 [P2_P1,p2_p1,T2_T1,P02_P01,M2] = obliqueshock(M1, beta2);
 [P3_P1,p3_p1,T3_T1,P03_P01,M3] = obliqueshock(M1, beta3);
 
-[mach, T, P, rho, downstream_mach, P0, P1] = flownormalshock(y, M1)
+[mach, T, P, rho, downstream_mach, P0, P1] = flownormalshock(y, M1);
 
 
 a_2 = 1+(y*(M2^2));
@@ -24,17 +24,20 @@ b_2 = (((2*y)/(y+1))*(M2^2)) - ((y-1)/(y+1));
 b_3 = (((2*y)/(y+1))*(M3^2)) - ((y-1)/(y+1));
 c = (y-1)/(y+1);
 
-Y =
+Y = [.01,0];
+e = .1;
+n = 1;
+while abs(f(Y(n))) > e
+if(n == 1)
+   Y(n+1) = Y(n) + (f(Y(n)));
+else
+   Y(n+1) = Y(n) + (f(n)/(f(n)-f(n+(Y(n)-Y(n-1)))/(2*(f(Y(n))-f(Y(n-1)))))); 
+end
 
-theta_4 = arctan((((Y/P3_P1)-1)/(a_3-(Y/P3_P1)))*sqrt((b_3-(Y/P3_P1))/(c+(Y/P3_P1)))); 
-theta_4prime = arctan((((Y/P2_P1)-1)/(a_2-(Y/P2_P1)))*sqrt((b_2-(Y/P2_P1))/(c+(Y/P2_P1))));
-phi_4 = theta_3 + theta_4;
-phi_4prime = theta_2 - theta_4prime;
-f = phi_4 - phi_4prime;
+n = n+1;
+end
 
-
-
-diff_eff=(P04/P01)+(P04prime/P01)/2*(p02/p01)
+diff_eff=(P04/P01)+(P04prime/P01)/2*(p02/p01);
 
 function Beta = collar(M,theta)
 global y
@@ -63,3 +66,11 @@ P02_P01 = (((((y+1)/2)*(M1^2)*(sin(B)^2))/(1+((y-1)/2)*(M1^2)*(sin(B)^2)))^(y*(y
 M2 = sqrt(((1+((y-1)/2)*M1^2)/((y*M1^2*sin(B)^2)-((y-1)/2)))+((M1^2*cos(B)^2)/(1+((y-1)/2)*M1^2*sin(B)^2)));
 end
 
+function F = f(Y)
+global theta_3 theta_2 P3_P1 P2_P1 a_2 a_3 b_2 b_3 c
+theta_4 = atan((((Y/P3_P1)-1)/(a_3-(Y/P3_P1)))*sqrt((b_3-(Y/P3_P1))/(c+(Y/P3_P1)))); 
+theta_4prime = atan((((Y/P2_P1)-1)/(a_2-(Y/P2_P1)))*sqrt((b_2-(Y/P2_P1))/(c+(Y/P2_P1))));
+phi_4 = theta_3 + theta_4;
+phi_4prime = theta_2 - theta_4prime;
+F = phi_4 - phi_4prime;
+end
