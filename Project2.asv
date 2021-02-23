@@ -6,12 +6,35 @@ p_s = 54000; %54kpa
 t_s = 225; %k
 y = 1.3;
 
-theta2 = 9*(pi/180); %input degrees
-theta3 = -3*(pi/180); %inputdegrees
+theta_2 = 9*(pi/180); %input degrees
+theta_3 = -3*(pi/180); %inputdegrees
 
-beta1 = collar(M1,theta2)*(180/pi)
+beta2 = collar(M1,theta_2)*(180/pi)
+beta3 = collar(M1,theta_3)*(180/pi)
 
-diff_eff=(P04/P01)+(P04prime/P01)/2*(p02/p01
+[] = obliqueshock(M1, beta2);
+[] = obliqueshock(M1, beta3);
+
+[mach, T, P, rho, downstream_mach, P0, P1] = flownormalshock(y, M1)
+
+
+a_2 = 1+(y*(M2^2));
+a_3 = 1+(y*(M3^2));
+b_2 = (((2*y)/(y+1))*(M2^2)) - ((y-1)/(y+1));
+b_3 = (((2*y)/(y+1))*(M3^2)) - ((y-1)/(y+1));
+c = (y-1)/(y+1);
+
+Y =
+
+theta_4 = arctan((((Y/P3_P1)-1)/(a_3-(Y/P3_P1)))*sqrt((b_3-(Y/P3_P1))/(c+(Y/P3_P1)))); 
+theta_4prime = arctan((((Y/P2_P1)-1)/(a_2-(Y/P2_P1)))*sqrt((b_2-(Y/P2_P1))/(c+(Y/P2_P1))));
+phi_4 = theta_3 + theta_4;
+phi_4prime = theta_2 - theta_4prime;
+f = phi_4 - phi_4prime;
+
+
+
+diff_eff=(P04/P01)+(P04prime/P01)/2*(p02/p01)
 
 function Beta = collar(M,theta)
 global y
@@ -30,11 +53,13 @@ accuracy = 1;
     end
 Beta = acot(x(n-1));
 end
-function [P2_P1,p2_p1,T2-T1,P02_P01,M2] = obliqueshock(M1)
+
+function [P2_P1,p2_p1,T2_T1,P02_P01,M2] = obliqueshock(M1,B)
 global y
 P2_P1 = ((2*y*(M1^2)*(sin(B)^2))/(y+1)) - ((y-1)/(y+1));
 p2_p1 = ((y+1)*(M1^2)*(sin(B)^2))/((y-1)*(M1^2)*(sin(B)^2) +2);
 T2_T1 = ((1+((y-1)/2)*(M1^2)*(sin(B)^2)*(((2*y)/y-1)*(M1^2)*(sin(B)^2) -1)))/((((y+1)^2)/(2*(y-1)))*(M1^2)*(sin(B)^2));
-P02_P01 = (((((y+1)/2)*(M1^2)*(sin(B)^2))/(1+((y-1)/2)*(M1^2)*(sin(B)^2)))^(y*(y-1)))*((1/((2*y/(y+1))*(M1^2)*(sin(B)^2) - ((y-1)/(y+1))))^(1/(y-1))):
+P02_P01 = (((((y+1)/2)*(M1^2)*(sin(B)^2))/(1+((y-1)/2)*(M1^2)*(sin(B)^2)))^(y*(y-1)))*((1/((2*y/(y+1))*(M1^2)*(sin(B)^2) - ((y-1)/(y+1))))^(1/(y-1)));
 M2 = sqrt(((1+((y-1)/2)*M1^2)/((y*M1^2*sin(B)^2)-((y-1)/2)))+((M1^2*cos(B)^2)/(1+((y-1)/2)*M1^2*sin(B)^2)));
 end
+
