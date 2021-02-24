@@ -23,20 +23,12 @@ a_3 = 1+(y*(M3^2));
 b_2 = (((2*y)/(y+1))*(M2^2)) - ((y-1)/(y+1));
 b_3 = (((2*y)/(y+1))*(M3^2)) - ((y-1)/(y+1));
 c = (y-1)/(y+1);
-%% newton rhpason
-Y = [.01,0];
-e = .1;
-n = 1;
-while abs(f(Y(n))) > e
-if(n == 1)
-   Y(n+1) = Y(n) + (f(Y(n)));
-else
-   Y(n+1) = Y(n) + (f(n)/(f(n)-f(n+(Y(n)-Y(n-1)))/(2*(f(Y(n))-f(Y(n-1)))))); 
-end
 
-n = n+1;
-end
+%% Newton Rap Son
+P4_P1 = fsolve(@f,0);
+
 %% Pt4
+
 diff_eff=(P04/P01)+(P04prime/P01)/2*(p02/p01);
 %% functions
 function Beta = collar(M,theta)
