@@ -9,8 +9,8 @@ y = 1.3;
 theta_2 = 12*(pi/180); %input degrees
 theta_3 = -8*(pi/180); %inputdegrees
 
-beta2 = collar(M1,theta_2);
-beta3 = collar(M1,theta_3);
+beta2 = collar(M1,abs(theta_2));
+beta3 = collar(M1,abs(theta_3));
 
 [P2_P1,p2_p1,T2_T1,P02_P01,M2] = obliqueshock(M1, beta2);
 [P3_P1,p3_p1,T3_T1,P03_P01,M3] = obliqueshock(M1, beta3);
