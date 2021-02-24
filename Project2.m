@@ -23,7 +23,7 @@ a_3 = 1+(y*(M3^2));
 b_2 = (((2*y)/(y+1))*(M2^2)) - ((y-1)/(y+1));
 b_3 = (((2*y)/(y+1))*(M3^2)) - ((y-1)/(y+1));
 c = (y-1)/(y+1);
-
+%% newton rhpason
 Y = [.01,0];
 e = .1;
 n = 1;
@@ -36,9 +36,9 @@ end
 
 n = n+1;
 end
-
+%% Pt4
 diff_eff=(P04/P01)+(P04prime/P01)/2*(p02/p01);
-
+%% functions
 function Beta = collar(M,theta)
 global y
 A = M^2-1;
