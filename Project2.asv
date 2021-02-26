@@ -1,14 +1,27 @@
 clc; clear all; close all;
-global y theta_3 theta_2 P2_P1 P3_P1 a_2 a_3 b_2 b_3 c
-M1 = 2.5;
-alt = 5000; %meters
-P1 = 54000; %54kpa
-T1 = 225; %k
+
+M1_design = 2.5;
+alt_design = 5000; %meters
+P1_design = 54000; %54kpa
+T1_design = 225; %k
+theta_2design = 12*(pi/180); %input degrees
+theta_3design = -8*(pi/180); %inputdegrees
+[P4_P1design, diff_eff_design, deltaV4_V4prime_design] = diffuser(theta_2design, theta_3design, M1_design, alt_design, P1_design, T1_design);
+
+
+
+M1_off = 2.1;
+alt_off= 5000;
+P1_off = 54000;
+T1_off = 225;
+theta_2off = 16*(pi/180); %input degrees
+theta_3off = -6.5*(pi/180); %inputdegrees
+[P4_P1off, diff_eff_off, deltaV4_V4off] = diffuser(theta_2off, theta_3off, M1_off, alt_off, P1_off, T1_off);
+error=100*(P4_P1design-P4_P1off)/(P4_P1design) %under 0.5% error
+
+function [P4_P1, diff_eff, deltaV4_V4prime] = diffuser(theta_2,theta_3, M1,alt, P1,T1)
+global y
 y = 1.3;
-
-theta_2 = 12*(pi/180); %input degrees
-theta_3 = -8*(pi/180); %inputdegrees
-
 beta2 = collar(M1,abs(theta_2));
 beta3 = collar(M1,abs(theta_3));
 
@@ -26,7 +39,6 @@ P4_P1 = fsolve(@f,0);
 
 %% Pt4
 Y= P4_P1;
-
 theta_4 = atan((((Y/P3_P1)-1)/(a_3-(Y/P3_P1)))*sqrt((b_3-(Y/P3_P1))/(c+(Y/P3_P1)))); 
 theta_4prime = atan((((Y/P2_P1)-1)/(a_2-(Y/P2_P1)))*sqrt((b_2-(Y/P2_P1))/(c+(Y/P2_P1))));
 beta4 = collar(M3,abs(theta_4));
@@ -44,16 +56,12 @@ T4prime=T4prime_T1*T1;
 
 V4=M4*sqrt(y*287*T4);
 V4prime=M4prime*sqrt(y*287*T4prime);
-[mach_nshock, T_nshock, P_nshock, rho_nshock, downstream_mach_nshock, P0nshock, P1nshock] = flownormalshock(y, M4);
+[mach_nshock, T_nshock, P_nshock, rho_nshock, downstream_mach_nshock, P0nshock, P1nshock] = flownormalshock(y, M1);
 
-diff_eff=(P04_P01)+(P04prime_P01)/2*(P0nshock)
-delta4
+diff_eff=100*(P04_P01)+(P04prime_P01)/2*(P0nshock);
+deltaV4_V4prime = (2*abs(V4-V4prime))/(V4+V4prime);
 
-
-
-%% functions
 function Beta = collar(M,theta)
-global y
 A = M^2-1;
 B = ((y+1)/2)*M^4*tan(theta);
 C = (1+((y+1)/2)*M^2)*tan(theta);
@@ -71,7 +79,7 @@ Beta = acot(x(n-1));
 end
 
 function [P2_P1,p2_p1,T2_T1,P02_P01,M2] = obliqueshock(M1,B)
-global y
+
 P2_P1 = ((2*y*(M1^2)*(sin(B)^2))/(y+1)) - ((y-1)/(y+1));
 p2_p1 = ((y+1)*(M1^2)*(sin(B)^2))/((y-1)*(M1^2)*(sin(B)^2) +2);
 T2_T1 = ((1+((y-1)/2)*(M1^2)*(sin(B)^2)*(((2*y)/y-1)*(M1^2)*(sin(B)^2) -1)))/((((y+1)^2)/(2*(y-1)))*(M1^2)*(sin(B)^2));
@@ -80,10 +88,11 @@ M2 = sqrt(((1+((y-1)/2)*M1^2)/((y*M1^2*sin(B)^2)-((y-1)/2)))+((M1^2*cos(B)^2)/(1
 end
 
 function F = f(Y)
-global theta_3 theta_2 P3_P1 P2_P1 a_2 a_3 b_2 b_3 c
+
 theta_4 = atan((((Y/P3_P1)-1)/(a_3-(Y/P3_P1)))*sqrt((b_3-(Y/P3_P1))/(c+(Y/P3_P1)))); 
 theta_4prime = atan((((Y/P2_P1)-1)/(a_2-(Y/P2_P1)))*sqrt((b_2-(Y/P2_P1))/(c+(Y/P2_P1))));
 phi_4 = theta_3 + theta_4;
 phi_4prime = theta_2 - theta_4prime;
 F = phi_4 - phi_4prime;
+end
 end
