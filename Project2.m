@@ -124,7 +124,7 @@ V4prime=M4prime*sqrt(y*287*T4prime);
 [mach_nshock, T_nshock, P_nshock, rho_nshock, downstream_mach_nshock, P0nshock, P1nshock] = flownormalshock(y, M1);
 
 diff_eff=100*(P04_P01)+(P04prime_P01)/2*(P0nshock);
-deltaV4_V4prime = (2*abs(V4-V4prime))/(V4+V4prime);
+deltaV4_V4prime = 100*(2*abs(V4-V4prime))/(V4+V4prime);
 
 function Beta = collar(M,theta)
 A = M^2-1;
