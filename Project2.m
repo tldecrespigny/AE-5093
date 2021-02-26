@@ -19,6 +19,24 @@ theta_3off = -6.5*(pi/180); %inputdegrees
 [P4_P1off, diff_eff_off, deltaV4_V4off] = diffuser(theta_2off, theta_3off, M1_off, alt_off, P1_off, T1_off);
 error=100*(P4_P1design-P4_P1off)/(P4_P1design) %under 0.5% error
 
+
+%% Trade Study
+theta2 = 4;
+theta3 = -4;
+P4_P1ts = zeros(1,10);
+diff_effts = zeros(1,10);
+deltaV4_V4ts = zeros(1,10);
+i = 1;
+while theta2 <= 16
+  while theta3 >= -16
+      [P4_P1ts(i), diff_effts(i), deltaV4_V4ts(i)] = diffuser(theta2, theta3, M1_design, alt_design, P1_design, T1_design);
+      theta3 = theta3 -4;
+      i = i+1;
+  end
+  theta2 = theta2 + 4;
+end
+
+%% Function
 function [P4_P1, diff_eff, deltaV4_V4prime] = diffuser(theta_2,theta_3, M1,alt, P1,T1)
 global y
 y = 1.3;
