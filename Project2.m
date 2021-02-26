@@ -22,14 +22,14 @@ error=100*(P4_P1design-P4_P1off)/(P4_P1design) %under 0.5% error
 
 %% Trade Study
 theta2 = 4;
-theta3 = -4;
 P4_P1ts = zeros(1,10);
 diff_effts = zeros(1,10);
 deltaV4_V4ts = zeros(1,10);
 i = 1;
 while theta2 <= 16
+  theta3 = -4;
   while theta3 >= -16
-      [P4_P1ts(i), diff_effts(i), deltaV4_V4ts(i)] = diffuser(theta2, theta3, M1_design, alt_design, P1_design, T1_design);
+      [P4_P1ts(i), diff_effts(i), deltaV4_V4ts(i)] = diffuser((theta2*(pi/180)), (theta3*(pi/180)), M1_design, alt_design, P1_design, T1_design);
       theta3 = theta3 -4;
       i = i+1;
   end
