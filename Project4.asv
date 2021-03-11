@@ -12,15 +12,15 @@ theta_w_max = num/2; %degrees
 deltatheta_a_minus1 = 0.3404;
 N_f=7;
 deltatheta=(theta_w_max-deltatheta_a_minus1)/N_f;
-
-mu_t=zeros(1,N_f);
-nu_t=zeros(1,N_f);
-M_t = zeros(1,N_f);
-Kminus = zeros(1,N_f);
-Kplus = zeros(1,N_f);
-theta = zeros(1,N_f);
+%% part2
+mu_t=zeros(1,N_f+1);
+nu_t=zeros(1,N_f+1);
+M_t = zeros(1,N_f+1);
+Kminus = zeros(1,N_f+1);
+Kplus = zeros(1,N_f+1);
+theta = zeros(1,N_f+1);
 theta(1)=deltatheta_a_minus1;
-N_t = [1:N_f];
+N_t = [1:N_f+1];
 
 for N=1:1:N_f
 [M_t(N), nu_t(N), mu_t(N)] = PMF(y,0,theta(N),0);
@@ -30,9 +30,18 @@ Kplus(N)=theta(N)+nu_t(N);
 theta(N+1)=theta(N)+deltatheta;
 end
 [M_t(8), nu_t(8), mu_t(8)] = PMF(y,0,theta(8),0);
-Kminus(8)=theta(N)-nu_t(N);
-Kplus(N)=theta(N)+nu_t(N);
-table=[N_t; nu_t;Kplus;Kminus;theta;M_t;mu_t]
+Kminus(8)=theta(8)-nu_t(8);
+Kplus(8)=theta(8)+nu_t(8);
+
+point=N_t';
+nu=nu_t'
+T = table (N, nu_t',Kplus',Kminus',theta',M_t',mu_t')
+%% part3
+figure(1);
+MinLengthNozzle(y,Me,N+1)
+
+figure(2);
+MinLengthNozzle(y,Me,20)
 
 
 

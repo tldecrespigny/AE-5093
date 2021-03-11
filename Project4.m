@@ -25,16 +25,22 @@ N_t = [1:N_f+1];
 for N=1:1:N_f
 [M_t(N), nu_t(N), mu_t(N)] = PMF(y,0,theta(N),0);
 
-Kminus(N)=theta(N)-nu_t(N);
-Kplus(N)=theta(N)+nu_t(N);
+Kminus(N)=theta(N)+nu_t(N);
+Kplus(N)=theta(N)-nu_t(N);
 theta(N+1)=theta(N)+deltatheta;
 end
 [M_t(8), nu_t(8), mu_t(8)] = PMF(y,0,theta(8),0);
-Kminus(8)=theta(8)-nu_t(8);
-Kplus(8)=theta(8)+nu_t(8);
+Kminus(8)=theta(8)+nu_t(8);
+Kplus(8)=theta(8)-nu_t(8);
 
-
-T = table (N_t', nu_t',Kplus',Kminus',theta',M_t',mu_t')
+point=N_t'; %for table implimentation
+nu=nu_t';
+Kplus=Kplus';
+Kminus=Kminus';
+theta=theta';
+M=M_t';
+mu=mu_t';
+T = table (point,Kminus,Kplus,theta,nu,M,mu)
 %% part3
 figure(1);
 MinLengthNozzle(y,Me,N+1)
