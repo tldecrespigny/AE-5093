@@ -4,6 +4,8 @@ g = 9.80665;    % m/s^2
 R = 287;        % J/(kgK)
 Me = 2;
 y = 1.3;
+R_t = 0.5389; %meters
+R_e = 0.7; %meters
 
 %% part1
 [M num mu ] = PMF(y,Me,0,0);
@@ -25,23 +27,35 @@ N_t = [1:N_f+1];
 for N=1:1:N_f
 [M_t(N), nu_t(N), mu_t(N)] = PMF(y,0,theta(N),0);
 
-Kminus(N)=theta(N)-nu_t(N);
-Kplus(N)=theta(N)+nu_t(N);
+Kminus(N)=theta(N)+nu_t(N);
+Kplus(N)=theta(N)-nu_t(N);
 theta(N+1)=theta(N)+deltatheta;
 end
 [M_t(8), nu_t(8), mu_t(8)] = PMF(y,0,theta(8),0);
-Kminus(8)=theta(8)-nu_t(8);
-Kplus(8)=theta(8)+nu_t(8);
+Kminus(8)=theta(8)+nu_t(8);
+Kplus(8)=theta(8)-nu_t(8);
 
-point=N_t';
-nu=nu_t'
-T = table (N, nu_t',Kplus',Kminus',theta',M_t',mu_t')
+point=N_t'; %for table implimentation
+nu=nu_t';
+Kplus=Kplus';
+Kminus=Kminus';
+theta=theta';
+M=M_t';
+mu=mu_t';
+T = table (point,Kminus,Kplus,theta,nu,M,mu)
 %% part3
 figure(1);
 MinLengthNozzle(y,Me,N+1)
 
 figure(2);
 MinLengthNozzle(y,Me,20)
+
+Lmin=xwall(21)*R_t;
+Yexit=ywall(21)*R_t;
+
+Lmin_over_2yexit = Lmin/2*Yexit
+
+
 
 
 

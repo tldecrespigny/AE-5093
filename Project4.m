@@ -4,6 +4,8 @@ g = 9.80665;    % m/s^2
 R = 287;        % J/(kgK)
 Me = 2;
 y = 1.3;
+R_t = 0.5389; %throat radius of project 1 nozzle meters
+R_e = 0.7; %exit radius of project 1 nozzle meters
 
 %% part1
 [M num mu ] = PMF(y,Me,0,0);
@@ -47,6 +49,23 @@ MinLengthNozzle(y,Me,N+1)
 
 figure(2);
 MinLengthNozzle(y,Me,20)
+
+Lmin=xwall(21)*R_t;
+Yexit=ywall(21)*R_t;
+
+Lmin_over_2yexit = Lmin/2*Yexit
+
+L= Lmin_over_2yexit*R_e*2
+
+%% part4
+
+%yes the nozzle is practicle for the rocket based on the RL-10 having
+%similar dimensions. https://www.rocket.com/space/liquid-engines/rl10-engine#features
+% RL10 L/D is 1.5 and ours is 1.3, but we belive that the length given on 
+%the website includes the engine as well as nozzle so the L/D would be close to ours.
+%However it is not common to use a single engine on a rocket of this size for many reasons.  
+
+
 
 
 
