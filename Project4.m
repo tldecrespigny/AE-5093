@@ -2,7 +2,7 @@ clc; close all; clear all;
 %% variable inputs
 g = 9.80665;    % m/s^2
 R = 287;        % J/(kgK)
-Me = 2;
+Me = 3;
 y = 1.3;
 R_t = 0.5389; %throat radius of project 1 nozzle meters
 R_e = 0.7; %exit radius of project 1 nozzle meters
@@ -65,7 +65,18 @@ L= Lmin_over_2yexit*R_e*2
 %the website includes the engine as well as nozzle so the L/D would be close to ours.
 %However it is not common to use a single engine on a rocket of this size for many reasons.  
 
+%not practicle cuz long as fuck
 
+figure(3);
+Me4 = 1.5;
+MinLengthNozzle(y,Me4,20)
+
+Lmin4=xwall(21)*R_t;
+Yexit4=ywall(21)*R_t;
+
+Lmin_over_2yexit = Lmin4/2*Yexit4
+r4=0.549;
+L4= Lmin_over_2yexit*r4*2
 
 
 
