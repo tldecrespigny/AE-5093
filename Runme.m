@@ -22,8 +22,8 @@ gamma = 1.4;
 gammarocket = 1.3;
 V0 = 0;
 %% Bread
-Me = 2;
-Aexit = (0.7^2)* pi; %meters
+Me = 1.5;
+Aexit = (0.549^2)* pi; %meters
 T0 = 3800; %kelvin
 Pexit = 101500; %101.5 kpa
 Mpay = 300;

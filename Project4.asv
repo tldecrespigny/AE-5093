@@ -80,7 +80,7 @@ Lmin_over_2yexit = Lmin4/2*Yexit4
 r4=0.549;
 L4= Lmin_over_2yexit*r4*2
 
-L_D4 = L4/(r4*2)
+L_D4 = L4/
 
 %% functions
 function [ M nu mu ] = PMF(G,M,nu,mu)
