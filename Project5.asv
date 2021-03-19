@@ -1,23 +1,40 @@
 clc; clear all ; close all;
-global m_inf gamma
-gamma = 1.4;
-Pr
+%% part 2
+y = 1.4;
+p_r = 0.71;
+m_inf = 3;
+deltan = 0.05;
+tw_tinf = 0;
 guess = 0.5;
-initial = [0,0,Tw/Tinf,0,guess];
-array1 = initial;
+
+
+CaseaA = code(guess, y, p_r,m_inf, deltan, tw_tinf, 1);
+tw_tinf = 1;
+CaseaB = code(guess, y, p_r,m_inf, deltan, tw_tinf, 2);
+tw_tinf = 1/4;
+CaseaC = code(guess, y, p_r,m_inf, deltan, tw_tinf, 2);
+m_inf = 2;
+CaseaD = code(guess, y, p_r,m_inf, deltan, tw_tinf, 2);
+%% function
+function  array = code(guess, y, p_r, m_inf, deltan, tw_tinf, case_num)
+global m_inf y p_r 
+initial = [0,0,tw_tinf,0,guess];
+array = initial;
+if case_num == 1
 while m~=u/v_inf
-    array1 = rk4_step(f(array1))
-    
-    n=n+0.1;
+    array = rk4_step(f(array))
+    n=n+deltan;
 end
-array2 = intial;
+else
 while g~=T/T_inf
-    array2 = rk4_step(f(array2))
-    
-    n=n+0.1;
+    array = rk4_step(f(array))
+    n=n+deltan;
+end
+end
 end
 
 function z = f(x)
+global m_inf y p_r 
 x(1) = f;
 x(2) = m;
 x(3) = g;
@@ -27,7 +44,7 @@ fprime = m;
 mprime = n;
 gprime = p;
 nprime = n*(((((1/3)*g^(-1))*p) - f*(g^(1/3))));
-pprime = p*((1/3)*(g^(-1))*p - (g^(-1/3))*p_r*f) - p_r*(y-1)*(M_inf^2)*(n^2);
+pprime = p*((1/3)*(g^(-1))*p - (g^(-1/3))*p_r*f) - p_r*(y-1)*(m_inf^2)*(n^2);
 z = [fprime,mprime,gprime,nprime,pprime];
 end
   
