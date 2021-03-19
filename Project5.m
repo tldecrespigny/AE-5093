@@ -3,58 +3,87 @@ clc; clear all ; close all;
 global dt
 y = 1.4;
 p_r = 0.71;
-m_inf = 3;
 deltan = 0.005;
 eta = 0:deltan:20;
-tw_tinf = 1;
 dt = deltan;
-guessPA = 0.677;
-guessNA = 0.477;
 
-
-%%% Case A
-% guessPA = 0.677;
-% guessNA = 0.477;
-% %CaseaA = code(guessP, guessN, y, p_r,m_inf, deltan, tw_tinf);
-% figure(1)
-% plot(CaseaB(:,2),eta');
-% hold on;
-% plot(CaseaB(:,3),eta');
-
-%%% Case B
-tw_tinf = 1;
-guessPB = 0.677;
-guessNB = 0.477;
-CaseaB = code(guessPB, guessNB, y, p_r,m_inf, deltan, tw_tinf);
+%% Case A
+guessPA = 0;
+guessNA = 0.57;
+tw_tinf = 2.7;
+m_inf = 3;
+CaseaA = code(guessPA, guessNA, y, p_r,m_inf, deltan, tw_tinf);
 figure(1)
+plot(CaseaA(:,2),eta');
+hold on;
+plot(CaseaA(:,3),eta');
+ylabel('eta');title('Case A: m and g vs eta');legend('m','g');
+
+figure(2)
+plot(CaseaA(:,2),(sqrt(2).*eta'));
+hold on;
+plot(CaseaA(:,3),(sqrt(2).*eta'));
+ylabel('eta');title('Case A: m and g vs sqrt(2)eta');legend('m','g');
+
+%% Case B
+tw_tinf = 1;
+m_inf = 3;
+guessPB = 0.625;
+guessNB = 0.455;
+CaseaB = code(guessPB, guessNB, y, p_r,m_inf, deltan, tw_tinf);
+figure(3)
 plot(CaseaB(:,2),eta');
 hold on;
 plot(CaseaB(:,3),eta');
+ylabel('eta');title('Case B: m and g vs eta');legend('m','g');
 
-%%% Case C
+figure(4)
+plot(CaseaB(:,2),(sqrt(2).*eta'));
+hold on;
+plot(CaseaB(:,3),(sqrt(2).*eta'));
+ylabel('eta');title('Case B: m and g vs sqrt(2)eta');legend('m','g');
+
+%% Case C
 tw_tinf = 1/4;
-guessPC = 1;
-guessNC = 0.44;
+m_inf = 3;
+guessPC = 0.613;
+guessNC = 0.304;
 CaseaC = code(guessPC, guessNC, y, p_r,m_inf, deltan, tw_tinf);
-figure(2)
+figure(5)
 plot(CaseaC(:,2),eta');
 hold on;
 plot(CaseaC(:,3),eta');
+ylabel('eta');title('Case C: m and g vs eta');legend('m','g');
 
-%%% Case D
-m_inf = 2;
-guessPD = 0.6;
-guessND = 0.298;
-CaseaD = code(guessPD, guessND, y, p_r,m_inf, deltan, tw_tinf);
-figure(3)
+figure(6)
+plot(CaseaC(:,2),(sqrt(2).*eta'));
+hold on;
+plot(CaseaC(:,3),(sqrt(2).*eta'));
+ylabel('eta');title('Case C: m and g vs sqrt(2)eta');legend('m','g');
+
+%% Case D
+tw_tinf = 0.25;
+m_infd = 2;
+guessPD = 0.412;
+guessND = 0.319;
+CaseaD = code(guessPD, guessND, y, p_r,m_infd, deltan, tw_tinf);
+figure(7)
 plot(CaseaD(:,2),eta');
 hold on;
 plot(CaseaD(:,3),eta');
+ylabel('eta');title('Case D: m and g vs eta');legend('m','g');
+
+figure(8)
+plot(CaseaD(:,2),(sqrt(2).*eta'));
+hold on;
+plot(CaseaD(:,3),(sqrt(2).*eta'));
+ylabel('eta');title('Case D: m and g vs sqrt(2)eta');legend('m','g');
 
 
 %% function
-function  solution_array = code(guessP, guessN, y, p_r, m_inf, deltan, tw_tinf)
+function  solution_array = code(guessP, guessN, y, p_r, minf, deltan, tw_tinf)
 global m_inf y p_r 
+m_inf=minf;
 initial = [0;0;tw_tinf;guessN;guessP];
 array = initial;
 m=array(2);
