@@ -1,29 +1,20 @@
 clc; clear all ; close all;
-global m_inf gamma p_r deltan tw_tinf
+global m_inf gamma
 gamma = 1.4;
-p_r = 0.71;
-m_inf = 3;
-deltan = 0.05;
-tw_tinf = 0;
+Pr
 guess = 0.5;
-
-array = code(guess, gamma, p_r,m_inf, deltan, tw_tinf)
-
-function  array = code(guess, gamma, p_r, m_inf, deltan, tw_tinf, case_num)
-guess = 0.5;
-initial = [0,0,tw_tinf,0,guess];
+initial = [0,0,Tw/Tinf,0,guess];
 array1 = initial;
 while m~=u/v_inf
     array1 = rk4_step(f(array1))
     
-    n=n+deltan;
+    n=n+0.1;
 end
 array2 = intial;
 while g~=T/T_inf
     array2 = rk4_step(f(array2))
     
-    n=n+deltan;
-end
+    n=n+0.1;
 end
 
 function z = f(x)
