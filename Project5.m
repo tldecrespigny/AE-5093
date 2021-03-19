@@ -8,25 +8,52 @@ deltan = 0.005;
 eta = 0:deltan:20;
 tw_tinf = 1;
 dt = deltan;
-guessP = 0.677;
-guessN = 0.477;
+guessPA = 0.677;
+guessNA = 0.477;
 
 
+%%% Case A
+% guessPA = 0.677;
+% guessNA = 0.477;
+% %CaseaA = code(guessP, guessN, y, p_r,m_inf, deltan, tw_tinf);
+% figure(1)
+% plot(CaseaB(:,2),eta');
+% hold on;
+% plot(CaseaB(:,3),eta');
 
-CaseaA = code(guessP, guessN, y, p_r,m_inf, deltan, tw_tinf, 1);
-% tw_tinf = 1;
-% CaseaB = code(guess, y, p_r,m_inf, deltan, tw_tinf, 2);
-% tw_tinf = 1/4;
-% CaseaC = code(guess, y, p_r,m_inf, deltan, tw_tinf, 2);
-% m_inf = 2;
-% CaseaD = code(guess, y, p_r,m_inf, deltan, tw_tinf, 2);
-
+%%% Case B
+tw_tinf = 1;
+guessPB = 0.677;
+guessNB = 0.477;
+CaseaB = code(guessPB, guessNB, y, p_r,m_inf, deltan, tw_tinf);
 figure(1)
-plot(CaseaA(:,2),eta');
+plot(CaseaB(:,2),eta');
 hold on;
-plot(CaseaA(:,3),eta');
+plot(CaseaB(:,3),eta');
+
+%%% Case C
+tw_tinf = 1/4;
+guessPC = 1;
+guessNC = 0.44;
+CaseaC = code(guessPC, guessNC, y, p_r,m_inf, deltan, tw_tinf);
+figure(2)
+plot(CaseaC(:,2),eta');
+hold on;
+plot(CaseaC(:,3),eta');
+
+%%% Case D
+m_inf = 2;
+guessPD = 0.6;
+guessND = 0.298;
+CaseaD = code(guessPD, guessND, y, p_r,m_inf, deltan, tw_tinf);
+figure(3)
+plot(CaseaD(:,2),eta');
+hold on;
+plot(CaseaD(:,3),eta');
+
+
 %% function
-function  solution_array = code(guessP, guessN, y, p_r, m_inf, deltan, tw_tinf, case_num)
+function  solution_array = code(guessP, guessN, y, p_r, m_inf, deltan, tw_tinf)
 global m_inf y p_r 
 initial = [0;0;tw_tinf;guessN;guessP];
 array = initial;
